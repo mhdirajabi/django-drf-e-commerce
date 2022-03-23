@@ -1,0 +1,83 @@
+{% extends 'shop_management/shop_list.html' %}
+{% load static %}
+
+{% block title %}سبدهای در حال بررسی{% endblock title %}
+
+{% block content %}
+{% if user.is_salesman and user.id == shop.owner.id %}
+<div class="container">
+    {% if not cart_list %}
+    <div class="row my-3 mx-auto w-50 justify-content-center">
+        <div class="row">
+            <p class="h3 text-center text-light my-5">
+                <strong>
+                    سبد در حال بررسی وجود ندارد!
+                </strong>
+            </p>
+        </div>
+    </div>
+    {% else %}
+    <div class="row my-5">
+        <p class="h2 text-light m-0 p-0">
+            سبدهای در حال بررسی:
+        </p>
+    </div>
+    <div class="row my-5 justify-content-center">
+        <ol class="list-group list-group-numbered p-0">
+            {% for cart in cart_list %}
+            <li class="list-group-item d-flex text-light text-center" style="background-color: #0c79a0;">
+                <div class="col">
+                    مشتری: {{ cart.customer.get_full_name }}
+                </div>
+                <div class="col status">
+                    وضعیت: {{ cart.get_status_display }}
+                </div>
+                <div class="col">
+                    <a href="{% url 'cart_detail' cart.id %}" class="btn btn-info text-nowrap">
+                        جزئیات سبد
+                    </a>
+                </div>
+                <div class="col">
+                    <select class="form-select sopt" aria-label="Cart Status">
+                        <option selected>تغییر وضعیت</option>
+                        <option value="processing">در حال بررسی</option>
+                        <option value="confirmed">تأیید شده</option>
+                        <option value="cancelled">کنسل شده</option>
+                        <option value="paid">پرداخت شده</option>
+                    </select>
+                </div>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+    <div class="row my-5 justify-content-center w-50 mx-auto">
+        <a href="{% url 'cart_list' shop.slug %}" class="btn btn-lg btn-primary w-50 mx-auto">بازگشت</a>
+    </div>
+</div>
+{% else %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-light text-center">
+            <h2>
+                &#9940; شما اجازه دسترسی به این صفحه را ندارید! &#9940;
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                برای بازگشت به صفحه اصلی کلیک کنید
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+{% block static_js %}
+<script>
+    var URL = "{% url 'processing_cart_list' shop.slug %}"
+    var CSRF_TOKEN = "{{ csrf_token }}"
+</script>
+<script src={% static 'js/change_status.js' %}></script>
+{% endblock static_js %}

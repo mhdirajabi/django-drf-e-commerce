@@ -1,0 +1,79 @@
+{% extends 'shop_management/shop_list.html' %}
+{% load static %}
+{% load jformat %}
+
+{% block title %}لیست محصولات{% endblock title %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {{ message.tags }} m-2 text-center" role="alert">
+    {{ message }}
+    <img src="close.soon" style="display:none;"
+        onerror="(function(el){setTimeout(function(){el.parentNode.parentNode.removeChild(el.parentNode);},3000);})(this);">
+</div>
+{% endfor %}
+{% endif %}
+{% if user.is_salesman and user.id == shop.owner.id %}
+<div class="container">
+    {% if not product_list %}
+    <div class="row my-3 mx-auto w-50 justify-content-center">
+        <div class="row">
+            <p class="h3 text-center text-light my-5">
+                <strong>
+                    چقدر خلوت... تاحالا محصولی ثبت نکردید!
+                </strong>
+            </p>
+        </div>
+        <div class="row">
+            <a href="{% url 'create_product' shop.slug %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                ثبت محصول
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="row my-5">
+        <p class="h2 text-light m-0 p-0">
+            محصولات:
+            <a href="{% url 'create_product' shop.slug %}" class="btn text-light float-end" style="background-color: #115e7b;">ثبت محصول جدید</a>
+        </p>
+    </div>
+    <div class="row my-5">
+        {% for product in product_list %}
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center my-2 text-light"
+            style="background-color: #0c79a0;">
+                {{ product.name }} - {{ product.brand }}
+                {% if product.get_stock > 0 %}
+                <span class="badge bg-success rounded-circle">{{ product.get_stock }}</span>
+                {% else %}
+                <span class="badge bg-danger rounded-circle">{{ product.get_stock }}</span>
+                {% endif %}
+            </li>
+        </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="row my-5 mx-auto w-50 justify-content-center">
+        <a href="{{ shop.get_absolute_url }}" class="btn btn-lg btn-primary">بازگشت</a>
+    </div>
+</div>
+{% else %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-light text-center">
+            <h2>
+                &#9940; شما اجازه دسترسی به این صفحه را ندارید! &#9940;
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                برای بازگشت به صفحه اصلی کلیک کنید
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

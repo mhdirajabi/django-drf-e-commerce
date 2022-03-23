@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+
+{% block static_css %}
+<link rel="stylesheet" href="{% static 'css/gtt_button.css' %}">
+{% endblock static_css %}
+
+{% block title %}مدیریت فروشگاه‌ها{% endblock title %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {{ message.tags }} m-2 text-center" role="alert">
+    {{ message }}
+    <img src="close.soon" style="display:none;"
+        onerror="(function(el){setTimeout(function(){el.parentNode.parentNode.removeChild(el.parentNode);},3000);})(this);">
+</div>
+{% endfor %}
+{% endif %}
+{% if user.is_salesman %}
+<div class="container">
+    {% if not shop_list %}
+    <div class="row my-3 mx-auto w-50 justify-content-center">
+        <div class="row">
+            <p class="h3 text-center text-light my-5">
+                <strong>
+                    چقدر خلوت... تاحالا فروشگاهی ثبت نکردید!
+                </strong>
+            </p>
+        </div>
+        <div class="row">
+            <a href="{% url 'create_shop' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">ثبت
+                فروشگاه جدید</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="row my-5">
+        <p class="h2 text-light m-0 p-0">
+            فروشگاه‌ها:
+            <a href="{% url 'create_shop' %}" class="btn text-light float-end" style="background-color: #115e7b;">ثبت
+                فروشگاه جدید</a>
+        </p>
+    </div>
+    <div class="row justify-content-start my-5">
+        {% for shop in shop_list %}
+        <div class="col-auto my-2">
+            <div class="card" style="background-color: #115e7b;">
+                <div class="card-header text-light">
+                    {{ shop.name }}
+                    {% if shop.status == 'confirmed' %}
+                    <span class="badge rounded-pill bg-success float-end text-light">
+                        {{ shop.get_status_display }}
+                    </span>
+                    {% elif shop.status == 'rejected' %}
+                    <span class="badge rounded-pill bg-danger float-end text-light">
+                        {{ shop.get_status_display }}
+                    </span>
+                    {% else %}
+                    <span class="badge rounded-pill bg-warning float-end text-light">
+                        {{ shop.get_status_display }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="card-body bg-info">
+                    <div class="col-12 p-2">
+                        <div class="row justify-content-center">
+                            <figure>
+                                <blockquote class="blockquote mb-0" style="color: #115e7b;">
+                                    <p>نوع فروشگاه: {{ shop.type.name }}</p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer my-2" style="color: #115e7b;">
+                                    آخرین بروزرسانی
+                                    <cite
+                                        title="{{ shop.last_updated|jformat }}">{{ shop.last_updated.date|jformat:"%A %d %B %Y" }}</cite>
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="row justify-content-center my-3">
+                                    <a href="{% url 'update_shop' shop.slug %}"
+                                        class="btn btn-sm btn-primary rounded-pill">بروزرسانی</a>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <a href="{% url 'delete_shop' shop.slug %}"
+                                        class="btn btn-sm btn-danger rounded-pill">حذف</a>
+                                </div>
+                                {% if shop.status == 'confirmed' %}
+                                <div class="row justify-content-center my-3">
+                                    <a href="{% url 'shop_detail' shop.slug %}"
+                                        class="btn btn-sm btn-secondary rounded-pill">جزئیات</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-light text-center">
+            <h2>
+                &#9940; شما اجازه دسترسی به این صفحه را ندارید! &#9940;
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                برای بازگشت به صفحه اصلی کلیک کنید
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+{% block gtt_button %}
+<button type="button" class="btn btn-primary btn-floating btn-sm rounded-circle" id="btn-back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+{% endblock gtt_button %}
+{% block static_js %}
+<script type="text/javascript" src="{% static 'js/gtt_button.js' %}"></script>
+{% endblock static_js %}

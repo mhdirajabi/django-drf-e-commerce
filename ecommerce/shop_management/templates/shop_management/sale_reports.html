@@ -1,0 +1,89 @@
+{% extends 'shop_management/shop_list.html' %}
+{% load static %}
+{% load jformat %}
+
+{% block title %}گزارشات فروش{% endblock title %}
+
+{% block content %}
+{% if user.is_salesman and user.id == shop.owner.id %}
+<div class="container">
+    <div class="row my-5">
+        <p class="h2 text-light m-0 p-0">
+            گزارش فروش فروشگاه:
+        </p>
+    </div>
+    <div class="row my-5 justify-content-center">
+    {% if not carts %}
+    <p class="h3 text-light m-0 p-0">
+        به نظر میرسه تاحالا فروشی نداشتید...
+    </p>
+    {% else %}
+    <div class="col-md-6">
+        <canvas id="myChart" width="250" height="200"></canvas>
+    </div>
+    {% endif %}
+    </div>
+    <div class="row my-5 justify-content-center w-50 mx-auto">
+        <a href="{{ shop.get_absolute_url }}" class="btn btn-lg btn-primary w-50 mx-auto">بازگشت</a>
+    </div>
+</div>
+{% else %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-light text-center">
+            <h2>
+                &#9940; شما اجازه دسترسی به این صفحه را ندارید! &#9940;
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                برای بازگشت به صفحه اصلی کلیک کنید
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+{% block chart_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for month in months %}'{{ month|jformat:"%B" }}',{% endfor %}
+            ],
+            datasets: [{
+                label: 'تعداد سفارشات',
+                data: [{% for cart in carts %}'{{ cart.cart_count }}',{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132)',
+                    'rgba(54, 162, 235)',
+                    'rgba(255, 206, 86)',
+                    'rgba(75, 192, 192)',
+                    'rgba(153, 102, 255)',
+                    'rgba(255, 159, 64)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock chart_js %}

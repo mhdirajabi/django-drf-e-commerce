@@ -1,0 +1,95 @@
+from django.urls import path, re_path
+
+from .views import (
+    CategoryDetailView,
+    CategoryListView,
+    CreateCategoryView,
+    CreatePostView,
+    CreateTagView,
+    DeleteCategoryView,
+    DeletePostView,
+    DeleteTagView,
+    FeedView,
+    PostDetailView,
+    TagDetailView,
+    TagListView,
+    UpdateCategoryView,
+    UpdatePostView,
+    UpdateTagView,
+    search_blog,
+)
+
+urlpatterns = [
+    path("feed/", FeedView.as_view(), name="feed"),
+    re_path(
+        "^post/(?P<slug>[-\w]+)/",
+        PostDetailView.as_view(),
+        name="post_detail",
+    ),
+    path(
+        "create-new-post/",
+        CreatePostView.as_view(),
+        name="create_post",
+    ),
+    re_path(
+        "edit/post/(?P<slug>[-\w]+)/",
+        UpdatePostView.as_view(),
+        name="update_post",
+    ),
+    re_path(
+        "remove/post/(?P<slug>[-\w]+)/",
+        DeletePostView.as_view(),
+        name="delete_post",
+    ),
+    path(
+        "categories/",
+        CategoryListView.as_view(),
+        name="category_list",
+    ),
+    re_path(
+        "categories/(?P<slug>[-\w]+)/",
+        CategoryDetailView.as_view(),
+        name="category_detail",
+    ),
+    path(
+        "create-new-category/",
+        CreateCategoryView.as_view(),
+        name="create_category",
+    ),
+    re_path(
+        "edit/category/(?P<slug>[-\w]+)/",
+        UpdateCategoryView.as_view(),
+        name="update_category",
+    ),
+    re_path(
+        "remove/category/(?P<slug>[-\w]+)/",
+        DeleteCategoryView.as_view(),
+        name="delete_category",
+    ),
+    path(
+        "tags/",
+        TagListView.as_view(),
+        name="tag_list",
+    ),
+    re_path(
+        "tags/(?P<slug>[-\w]+)/",
+        TagDetailView.as_view(),
+        name="tag_detail",
+    ),
+    path(
+        "create-new-tag/",
+        CreateTagView.as_view(),
+        name="create_tag",
+    ),
+    re_path(
+        "edit/tag/(?P<slug>[-\w]+)/",
+        UpdateTagView.as_view(),
+        name="update_tag",
+    ),
+    re_path(
+        "remove/tag/(?P<slug>[-\w]+)/",
+        DeleteTagView.as_view(),
+        name="delete_tag",
+    ),
+    path("search/", search_blog, name="search"),
+]

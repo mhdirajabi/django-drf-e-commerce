@@ -1,0 +1,108 @@
+{% extends 'blog/feed.html' %}
+
+{% load static %}
+
+{% load jformat %}
+
+{% block title %}{{post.title}}{% endblock title %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="col-12">
+            <div class="row my-3">
+                <div class="col-12">
+                    <div class="row">
+                        <figure>
+                            <blockquote class="blockquote">
+                                <p class="h2" style="color: #3c4c41;"><strong>{{post.title}}</strong></p>
+                            </blockquote>
+                            <figcaption class="blockquote-footer my-2" style="color: #115e7b;">
+                                منتشر شده در <cite title="{{post.date_created|jformat}}">
+                                    {{post.date_created|timesince}}</cite> 
+                                    قبل توسط 
+                                    <a href="{{ post.creator.profile.get_absolute_url }}"
+                                    style="text-decoration: none;">
+                                        {{post.creator.first_name}} {{post.creator.last_name}}
+                                    </a>
+                            </figcaption>
+                        </figure>
+                    <div>
+                    <div class="row">
+                        <ul class="list-inline">
+                            <li class="list-inline-item h5" style="color: #3c4c41;"><strong>دسته‌بندی‌ها:</strong></li>
+                            {% if not post.categories.all %}
+                                <li class="list-inline-item">
+                                    <em><p class="lead text-secondary">
+                                        بدون دسته‌بندی.</p>
+                                    </em>
+                                </li>
+                            {% else %}
+                                {% for category in post.categories.all %}
+                                <li class="list-inline-item">
+                                    <a class="btn btn-sm rounded-pill text-light" style="background-color: #3c4c41;" href="">
+                                        {{category.name}}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    <div>
+                    <div class="row">
+                        <ul class="list-inline">
+                            <li class="list-inline-item h5" style="color: #3c4c41;"><strong>تگ‌ ها:</strong></li>
+                            {% if not post.tags.all %}
+                                <li class="list-inline-item">
+                                    <em><p class="lead" style="color: #3c4c41;">
+                                        هیچ تگی نیست!</p>
+                                    </em>
+                                </li>
+                            {% else %}
+                                {% for tag in post.tags.all %}
+                                <li class="list-inline-item">
+                                    <a class="lead" href="" style="text-decoration: none; color: #0c79a0;">
+                                        #{{tag.name}}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    <div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-12 text-center">
+                    {% if post.image %}
+                    <img src="{{post.image.url}}" class="img-fluid rounded" alt="image post">
+                    {% else %}
+                    <img src="{% static 'images/no-image.jpg'%}" class="img-fluid rounded" alt="image post">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-12">
+                    <figure class="text-center">
+                        <blockquote class="blockqoute">
+                            <p class="lead" style="color: #3c4c41;">{{post.content}}</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer my-2" style="color: #115e7b;">
+                            آخرین بروزرسانی <cite title="{{post.last_modified|jformat}}">{{post.last_modified|timesince}}</cite>
+                            قبل
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                {% if user.id == post.creator.id %}
+                    <div class="row">
+                        <div class="col-6 text-end">
+                            <a href="{% url 'update_post' post.slug %}" class="btn btn-primary rounded-pill">ویرایش</a>
+                        </div>
+                        <div class="col-6 text-start">
+                            <a href="{% url 'delete_post' post.slug %}" class="btn btn-danger rounded-pill">حذف</a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

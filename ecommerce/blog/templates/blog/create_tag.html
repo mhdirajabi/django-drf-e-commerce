@@ -1,0 +1,51 @@
+{% extends 'blog/feed.html' %}
+{% load static %}
+
+{% block title %}تگ جدید{% endblock title %}
+
+{% block content %}
+    {% if user.is_authenticated and user.is_salesman %}
+        <div class="container">
+            <div class="row justify-content-center mb-5 mt-3">
+                <div class="col-auto">
+                    <p class="h2 text-light">ساخت تگ جدید</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="form-group my-3 mx-auto w-50">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="d-grid gap-2 my-5">
+                                <button class="btn btn-secondary" type="submit">ساختن</button>
+                                <a class="btn btn-primary" href="{% url 'tag_list' %}">بازگشت</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var user_id = "{{ user.id }}";
+            document.getElementById("owner").value = user_id;
+        </script>
+    {% else %}
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-12 text-light text-center">
+                    <h2>             	
+                        &#9940; شما اجازه دسترسی به این صفحه را ندارید! &#9940;
+                    </h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center mt-5">
+                    <a href="{% url 'home' %}" class="btn btn-lg text-light" style="background-color: #115e7b;">
+                        برای بازگشت به صفحه اصلی کلیک کنید
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}
