@@ -1,17 +1,16 @@
 import uuid
-from datetime import timedelta
 
 import requests
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.signals import post_save
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.text import slugify
 from phonenumber_field.modelfields import PhoneNumberField
 
-from .managers import CustomerManager, CustomUserManager, SellerManager
+from .managers import CustomerManager, CustomUserManager, SellerManager, TOTPManager
 from .utils import generate_totp, unique_slugify
 
 
@@ -115,32 +114,6 @@ class Address(models.Model):
         return self.city + "، " + self.address
 
 
-class TOTPRequestQuerySet(models.QuerySet):
-    def is_valid(self, receiver, request, code):
-        current_time = timezone.now()
-        result = self.filter(
-            receiver=receiver,
-            request_id=request,
-            code=code,
-            created__lt=current_time,
-            created__gt=current_time - timedelta(seconds=300),
-        ).exists()
-        return result
-
-
-class TOTPManager(models.Manager):
-    def get_queryset(self):
-        return TOTPRequestQuerySet(self.model, self._db)
-
-    def is_valid(self, receiver, request, code):
-        return self.get_queryset().is_valid(receiver, request, code)
-
-    def generate(self, data):
-        totp = self.model(channel=data["channel"], receiver=data["receiver"])
-        totp.save(using=self._db)
-        return totp
-
-
 class TOTPRequest(models.Model):
     class TOTPChannel(models.TextChoices):
         PHONE = "phone_number"
@@ -162,15 +135,13 @@ class TOTPRequest(models.Model):
     def send_totp(sender, **kwargs):
         request = kwargs["instance"]
         if kwargs["created"]:
-            print("salam")
-            API_KEY = "6569574E374562744E37733236305A7053635A364E6E536C4E3363655067683869553355733751496F616F3D"
             body = {
                 "receptor": request.receiver,
                 "token": request.code,
                 "template": "verify",
             }
             requests.get(
-                f"https://api.kavenegar.com/v1/{API_KEY}/verify/lookup.json",
+                f"https://api.kavenegar.com/v1/{settings.KN_API_KEY}/verify/lookup.json",
                 params=body,
             )
 

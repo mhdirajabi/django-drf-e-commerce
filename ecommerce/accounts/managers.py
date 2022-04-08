@@ -1,4 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.db import models
+
+from .querysets import TOTPRequestQuerySet
 
 
 class CustomUserManager(BaseUserManager):
@@ -50,3 +53,16 @@ class CustomerManager(CustomUserManager):
             .get_queryset()
             .filter(is_superuser=False, is_staff=False, is_salesman=False)
         )
+
+
+class TOTPManager(models.Manager):
+    def get_queryset(self):
+        return TOTPRequestQuerySet(self.model, self._db)
+
+    def is_valid(self, receiver, request, code):
+        return self.get_queryset().is_valid(receiver, request, code)
+
+    def generate(self, data):
+        totp = self.model(channel=data["channel"], receiver=data["receiver"])
+        totp.save(using=self._db)
+        return totp
