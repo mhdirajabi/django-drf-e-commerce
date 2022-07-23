@@ -79,6 +79,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#">فروشگاه‌</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'schema-redoc' %}">مستندات API</a>
+                            </li>
                             {% endblock navbar_items %}
                         </ul>
                         {% if user.is_authenticated %}

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_filters",
     "django_jalali",
+    "django_spaghetti",
     "phonenumber_field",
     "rest_framework",
     "rest_framework_simplejwt",
@@ -130,9 +131,9 @@ WSGI_APPLICATION = "ecommerce.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "ecommerce",
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
@@ -207,3 +208,8 @@ PHONENUMBER_DEFAULT_FORMAT = "NATIONAL"
 CORS_ALLOW_ALL_ORIGINS = True
 
 KN_API_KEY = os.getenv("KN_API_KEY")
+
+SPAGHETTI_SAUCE = {
+    "apps": ["accounts", "blog", "shop", "shop_management"],
+    "show_fields": True,
+}
